@@ -1,12 +1,13 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class SceneSelector : MonoBehaviour
+public class ActiveToggle : MonoBehaviour
 {
+
+    public GameObject gameObject;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
     }
 
     // Update is called once per frame
@@ -15,13 +16,8 @@ public class SceneSelector : MonoBehaviour
 
     }
 
-    public void SelectScene()
+    public void ToggleActive()
     {
-        SceneManager.LoadSceneAsync(1);
-    }
-
-    public void ExitToMain()
-    {
-        SceneManager.LoadSceneAsync(0);
+        gameObject.SetActive(!gameObject.activeSelf);
     }
 }

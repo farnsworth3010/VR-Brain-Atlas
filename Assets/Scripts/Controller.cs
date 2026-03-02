@@ -73,7 +73,7 @@ public class Controller : MonoBehaviour
 
     private void Rotate(float x, float y)
     {
-        if (!gamepad.buttonSouth.isPressed)
+        if (!gamepad.buttonSouth.isPressed && !gamepad.buttonNorth.isPressed && !gamepad.buttonEast.isPressed && !gamepad.buttonWest.isPressed)
         {
             if (Mathf.Abs(x) >= inputDeadzone)
             {
