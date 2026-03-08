@@ -73,20 +73,23 @@ public class Controller : MonoBehaviour
 
     private void Rotate(float x, float y)
     {
-        if (!gamepad.buttonSouth.isPressed && !gamepad.buttonNorth.isPressed && !gamepad.buttonEast.isPressed && !gamepad.buttonWest.isPressed)
+        if (gamepad != null)
         {
-            if (Mathf.Abs(x) >= inputDeadzone)
+            if (!gamepad.buttonSouth.isPressed && !gamepad.buttonNorth.isPressed && !gamepad.buttonEast.isPressed && !gamepad.buttonWest.isPressed)
             {
-                x = x * Time.deltaTime * controllerXSensitivity;
-                xrOrigin.transform.Rotate(Vector3.up * x);
-            }
+                if (Mathf.Abs(x) >= inputDeadzone)
+                {
+                    x = x * Time.deltaTime * controllerXSensitivity;
+                    xrOrigin.transform.Rotate(Vector3.up * x);
+                }
 
-            if (Mathf.Abs(y) >= inputDeadzone)
-            {
-                y = y * Time.deltaTime * controllerYSensitivity;
-                xRotation -= y;
-                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-                mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                if (Mathf.Abs(y) >= inputDeadzone)
+                {
+                    y = y * Time.deltaTime * controllerYSensitivity;
+                    xRotation -= y;
+                    xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+                    mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                }
             }
         }
     }
