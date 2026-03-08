@@ -1,41 +1,37 @@
-using System.Diagnostics;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Debug = UnityEngine.Debug;
 
 public class Controller : MonoBehaviour
 {
 
     public float moveSpeed = 3f;
-
-    public XROrigin xrOrigin;
-    public Camera mainCamera;
     public float inputDeadzone = 0.05f;
     public float controllerXSensitivity = 100f;
     public float controllerYSensitivity = 100f;
     public float xRotation = 0f;
     public float gravity = -9.81f;
-    private CharacterController characterController;
-    public Vector3 velocity;
-
-    public Transform groundCheck;
     public float groundDistance = 0.2f;
+
+    public XROrigin xrOrigin;
+    public Camera mainCamera;
+    public Vector3 velocity;
+    public Transform groundCheck;
     public LayerMask groundMask;
 
-    private bool isGrounded;
+    private CharacterController characterController;
     private Gamepad gamepad;
+    private bool isGrounded;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         gamepad = Gamepad.current;
+
         Cursor.lockState = CursorLockMode.Locked;
 
         characterController = GetComponent<CharacterController>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         Vector2 moveInput = gamepad != null ? gamepad.leftStick.ReadValue() : Vector2.zero;
@@ -73,23 +69,25 @@ public class Controller : MonoBehaviour
 
     private void Rotate(float x, float y)
     {
-        if (gamepad != null)
+        if (gamepad == null)
         {
-            if (!gamepad.buttonSouth.isPressed && !gamepad.buttonNorth.isPressed && !gamepad.buttonEast.isPressed && !gamepad.buttonWest.isPressed)
-            {
-                if (Mathf.Abs(x) >= inputDeadzone)
-                {
-                    x = x * Time.deltaTime * controllerXSensitivity;
-                    xrOrigin.transform.Rotate(Vector3.up * x);
-                }
+            return;
+        }
 
-                if (Mathf.Abs(y) >= inputDeadzone)
-                {
-                    y = y * Time.deltaTime * controllerYSensitivity;
-                    xRotation -= y;
-                    xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-                    mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-                }
+        if (!gamepad.buttonSouth.isPressed && !gamepad.buttonNorth.isPressed && !gamepad.buttonEast.isPressed && !gamepad.buttonWest.isPressed)
+        {
+            if (Mathf.Abs(x) >= inputDeadzone)
+            {
+                x = x * Time.deltaTime * controllerXSensitivity;
+                xrOrigin.transform.Rotate(Vector3.up * x);
+            }
+
+            if (Mathf.Abs(y) >= inputDeadzone)
+            {
+                y = y * Time.deltaTime * controllerYSensitivity;
+                xRotation -= y;
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+                mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
             }
         }
     }

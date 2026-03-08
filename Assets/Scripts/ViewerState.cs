@@ -3,6 +3,7 @@ using UnityEngine;
 public static class ViewerState
 {
     static private string sceneName = null;
+    static private string sceneDescription = null;
 
     public static string SceneName
     {
@@ -16,8 +17,6 @@ public static class ViewerState
     {
         sceneName = name;
     }
-
-    static private string sceneDescription = null;
 
     public static string SceneDescription
     {
