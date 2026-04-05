@@ -27,7 +27,7 @@ public class Controller : MonoBehaviour
     {
         gamepad = Gamepad.current;
 
-        Cursor.lockState = CursorLockMode.Locked;
+        // Cursor.lockState = CursorLockMode.Locked;
 
         characterController = GetComponent<CharacterController>();
     }
