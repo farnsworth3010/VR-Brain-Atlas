@@ -8,6 +8,7 @@ public class InputSystemDpadLayoutFix : MonoBehaviour
 {
   private static bool isSubscribed;
   private static bool isRepairInProgress;
+  private static bool hasLoggedFix;
 
   private void Awake()
   {
@@ -104,7 +105,13 @@ public class InputSystemDpadLayoutFix : MonoBehaviour
         }
       }
 
-      Debug.LogWarning("InputSystem: fixed Dpad layout conflict (device layout replaced with DpadControl).");
+#if UNITY_EDITOR
+      if (!hasLoggedFix)
+      {
+        Debug.Log("InputSystem: Dpad layout conflict fixed (OpenXR override corrected).");
+        hasLoggedFix = true;
+      }
+#endif
     }
     finally
     {
