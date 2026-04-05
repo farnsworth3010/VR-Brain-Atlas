@@ -10,12 +10,18 @@ public class ModelLoader : MonoBehaviour
 {
   [Header("Assign in Inspector")]
   [SerializeField] private Transform container;
+  [SerializeField] private ImportedLayersMenuController importedLayersMenuController;
 
   [Header("Loading")]
   [SerializeField] private bool addBoxCollider = true;
   [SerializeField] private bool clearContainerBeforeLoad = true;
 
   private bool isLoading;
+
+  private void Awake()
+  {
+    EnsureImportedLayersMenuController();
+  }
 
   public void OpenAndLoadModel()
   {
@@ -30,6 +36,8 @@ public class ModelLoader : MonoBehaviour
       Debug.LogError("ModelLoader: Container is not assigned.");
       return;
     }
+
+    EnsureImportedLayersMenuController();
 
     string selectedPath = OpenModelFileDialog();
     if (string.IsNullOrEmpty(selectedPath))
@@ -98,6 +106,13 @@ public class ModelLoader : MonoBehaviour
   {
     isLoading = true;
 
+    EnsureImportedLayersMenuController();
+
+    if (importedLayersMenuController != null)
+    {
+      importedLayersMenuController.ClearList();
+    }
+
     if (clearContainerBeforeLoad)
     {
       yield return ClearContainerCoroutine();
@@ -124,6 +139,20 @@ public class ModelLoader : MonoBehaviour
     if (!success)
     {
       Debug.LogError($"Failed to load model from path: {path}");
+    }
+  }
+
+  private void EnsureImportedLayersMenuController()
+  {
+    if (importedLayersMenuController != null)
+    {
+      return;
+    }
+
+    importedLayersMenuController = FindFirstObjectByType<ImportedLayersMenuController>();
+    if (importedLayersMenuController == null)
+    {
+      Debug.LogWarning("ModelLoader: ImportedLayersMenuController is not assigned and was not found in scene.");
     }
   }
 
@@ -208,6 +237,11 @@ public class ModelLoader : MonoBehaviour
     if (addBoxCollider && marker.GetComponentInChildren<Collider>() == null)
     {
       marker.AddComponent<BoxCollider>();
+    }
+
+    if (importedLayersMenuController != null)
+    {
+      importedLayersMenuController.RebuildFromImportedRoot(marker.transform);
     }
 
     onComplete?.Invoke(true);
@@ -408,6 +442,11 @@ public class ModelLoader : MonoBehaviour
       if (addBoxCollider && instance.GetComponentInChildren<Collider>() == null)
       {
         instance.AddComponent<BoxCollider>();
+      }
+
+      if (importedLayersMenuController != null)
+      {
+        importedLayersMenuController.RebuildFromImportedRoot(instance.transform);
       }
 
       bundle.Unload(false);
