@@ -1,6 +1,8 @@
 using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
+using UnityEngine.InputSystem.XInput;
 
 [RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
 public class Controller : MonoBehaviour
@@ -16,12 +18,16 @@ public class Controller : MonoBehaviour
 
     public XROrigin xrOrigin;
     public Camera mainCamera;
+    public GameObject leftHand;
+    public GameObject rightHand;
+    public Behaviour gamepadRayInteractor;
     public Vector3 velocity;
     public Transform groundCheck;
     public LayerMask groundMask;
 
     private CharacterController characterController;
     private PlayerInput playerInput;
+    private TrackedPoseDriver trackedPoseDriver;
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction attackAction;
@@ -34,13 +40,17 @@ public class Controller : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
+        trackedPoseDriver = mainCamera != null ? mainCamera.GetComponent<TrackedPoseDriver>() : null;
     }
 
     void OnEnable()
     {
+        InputSystem.onDeviceChange += OnDeviceChange;
+
         if (playerInput == null || playerInput.actions == null)
         {
             Debug.LogError("Controller requires a PlayerInput component with an assigned Input Actions asset.", this);
+            UpdateInputModeState();
             return;
         }
 
@@ -50,15 +60,25 @@ public class Controller : MonoBehaviour
         interactAction = playerInput.actions.FindAction("Interact", false);
         crouchAction = playerInput.actions.FindAction("Crouch", false);
         jumpAction = playerInput.actions.FindAction("Jump", false);
+
+        UpdateInputModeState();
+    }
+
+    void OnDisable()
+    {
+        InputSystem.onDeviceChange -= OnDeviceChange;
     }
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        UpdateInputModeState();
     }
 
     void Update()
     {
+        UpdateInputModeState();
+
         Vector2 moveInput = moveAction != null ? moveAction.ReadValue<Vector2>() : Vector2.zero;
         Vector2 rotateInput = lookAction != null ? lookAction.ReadValue<Vector2>() : Vector2.zero;
 
@@ -123,5 +143,68 @@ public class Controller : MonoBehaviour
     private static bool IsPressed(InputAction action)
     {
         return action != null && action.IsPressed();
+    }
+
+    private void OnDeviceChange(InputDevice device, InputDeviceChange change)
+    {
+        switch (change)
+        {
+            case InputDeviceChange.Added:
+            case InputDeviceChange.Removed:
+            case InputDeviceChange.Disconnected:
+            case InputDeviceChange.Reconnected:
+            case InputDeviceChange.Enabled:
+            case InputDeviceChange.Disabled:
+                UpdateInputModeState();
+                break;
+        }
+    }
+
+    private void UpdateInputModeState()
+    {
+        bool hasXInput = HasConnectedXInputDevice();
+
+        if (trackedPoseDriver == null && mainCamera != null)
+        {
+            trackedPoseDriver = mainCamera.GetComponent<TrackedPoseDriver>();
+        }
+
+        if (trackedPoseDriver != null)
+        {
+            trackedPoseDriver.enabled = !hasXInput;
+        }
+
+        if (leftHand != null)
+        {
+            leftHand.SetActive(!hasXInput);
+        }
+
+        if (rightHand != null)
+        {
+            rightHand.SetActive(!hasXInput);
+        }
+
+        if (gamepadRayInteractor != null)
+        {
+            if (gamepadRayInteractor.gameObject.activeSelf != hasXInput)
+            {
+                gamepadRayInteractor.gameObject.SetActive(hasXInput);
+            }
+
+            gamepadRayInteractor.enabled = hasXInput;
+        }
+    }
+
+    private static bool HasConnectedXInputDevice()
+    {
+        foreach (InputDevice device in InputSystem.devices)
+        {
+            if (device is XInputController)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
