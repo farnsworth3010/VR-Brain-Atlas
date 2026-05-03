@@ -67,5 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "VR Brain Atlas.slnx"
+    "dotnet.defaultSolution": "VR Brain Atlas.slnx",
+    "editor.codeLens": false
 }

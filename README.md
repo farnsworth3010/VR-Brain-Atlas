@@ -1,27 +1,54 @@
-# VR-Brain-Atlas
+# VR Brain Atlas
 
-## Setup
+3D VR-просмотрщик медицинских моделей мозга: мозг, опухоли, сосуды и костный слой. Приложение позволяет вращать и перемещать модели, менять масштаб и включать/выключать слои для изучения анатомии в виртуальной реальности.
 
-This project uses Git LFS (Large File Storage) for managing large assets. To clone and work with this repository, follow these steps:
+Основные возможности
+- Просмотр 3D-моделей мозга, опухолей, сосудов и костей
+- Вращение, перемещение и масштабирование моделей
+- Включение / отключение слоёв (brain / tumor / arteria / skull)
+- Поддержка загрузки моделей из папки или через диалог выбора файлов
 
-1. Install Git LFS if you haven't already:
-   - Download and install from [https://git-lfs.github.io/](https://git-lfs.github.io/)
-   - Or use your package manager (e.g., `brew install git-lfs` on macOS, `apt install git-lfs` on Ubuntu)
+Скриншоты
 
-2. Initialize Git LFS in your Git installation:
-   ```
-   git lfs install
-   ```
+Требования
+- Unity 6 
+- .NET / C#
+- Git и Git LFS для загрузки больших ассетов
 
-3. Clone the repository:
-   ```
-   git clone https://github.com/your-username/vr-brain-atlas.git
-   cd vr-brain-atlas
-   ```
+Установка (через Git)
+----------------------
 
-4. Pull the large files:
-   ```
-   git lfs pull
-   ```
+1) Установите Git LFS, если он ещё не установлен:
 
-This ensures that all large assets (models, textures, etc.) are properly downloaded.
+```bash
+git lfs install
+```
+
+2) Клонируйте репозиторий и загрузите большие файлы:
+
+```bash
+git clone https://github.com/your-username/vr-brain-atlas.git
+cd "vr-brain-atlas"
+git lfs pull
+```
+
+Запуск проекта
+--------------
+
+- Откройте проект в Unity Editor (через Unity Hub или напрямую, указав папку проекта).
+- Подождите, пока Unity импортирует ассеты и соберёт проект.
+- Откройте нужную сцену (в списке `Assets/Scenes` или через окно сцены) и нажмите Play.
+
+Поддерживаемое оборудование
+- HTC Vive (через SteamVR)
+- IVRY (через SteamVR)
+- Телефон в режиме VR (через совместимые мосты/плагины SteamVR)
+- Управление: геймпад Xbox или другие совместимые контроллеры
+
+Примечание: для корректной работы в VR убедитесь, что установлены и включены соответствующие плагины/драйверы (SteamVR или провайдер вашего устройства) и что в Unity настроен XR-плагин для вашей платформы.
+
+Загрузка и использование 3D-моделей
+---------------------------------
+
+- Подготовка моделей из MRI: через программу `swiss_skull` (ссылка: [swiss_skull](https://github.com/AlekseyShugol/swiss_skull)). `swiss_skull` преобразует МРТ-снимки в 3D-модели мозга и опухоли.
+- Для просмотра моделей в VR поместите экспортированные файлы в папку `Documents/VR Brain Atlas` или выберите файлы вручную через диалог выбора файлов в приложении.

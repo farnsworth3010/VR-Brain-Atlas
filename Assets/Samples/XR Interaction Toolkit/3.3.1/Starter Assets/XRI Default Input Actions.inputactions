@@ -2973,6 +2973,17 @@
                 },
                 {
                     "name": "",
+                    "id": "bb0c9caf-ba92-4287-ab49-98c9027c4251",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "67f51768-1493-4444-b118-82d398a16fdd",
                     "path": "*/{Cancel}",
                     "interactions": "",

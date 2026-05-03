@@ -1,33 +1,24 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Строит список <see cref="Toggle"/> для слоёв импортированной модели
-/// и синхронизирует состояние toggle с активностью соответствующего GameObject.
-/// </summary>
+// Строит список для слоёв импортированной модели
+// и синхронизирует состояние toggle с активностью соответствующего GameObject.
 public class ImportedLayersMenuController : MonoBehaviour
 {
   private const string LogPrefix = "ImportedLayersMenuController";
   private const int DefaultPadding = 4;
 
-  [Header("Assign in Inspector")]
-  [SerializeField] private Transform scrollView;
-  [SerializeField] private Toggle toggleItemPrefab;
-  [SerializeField] private Transform modelRoot;
+  public Transform scrollView;
+  public Toggle toggleItemPrefab;
+  public Transform modelRoot;
 
-  [Header("Layout")]
-  [Min(0f)]
-  [SerializeField] private float itemSpacing = 8f;
-  [Min(0f)]
-  [SerializeField] private float itemHeight = 36f;
-  [SerializeField] private RectOffset contentPadding;
+  private float itemSpacing = 8f;
+  private float itemHeight = 36f;
+  private RectOffset contentPadding;
 
-  [Header("Startup")]
-  [Min(0f)]
-  [SerializeField] private float startDelaySeconds = 1f;
+  private float startDelaySeconds = 1f;
 
   private void Awake()
   {
@@ -39,9 +30,6 @@ public class ImportedLayersMenuController : MonoBehaviour
     StartCoroutine(DelayedStart());
   }
 
-  /// <summary>
-  /// Запускает начальную инициализацию с опциональной задержкой.
-  /// </summary>
   private IEnumerator DelayedStart()
   {
     if (startDelaySeconds > 0f)
@@ -52,9 +40,6 @@ public class ImportedLayersMenuController : MonoBehaviour
     RunInitialBuild();
   }
 
-  /// <summary>
-  /// Выполняет начальное построение списка.
-  /// </summary>
   private void RunInitialBuild()
   {
     if (modelRoot != null)
@@ -63,10 +48,6 @@ public class ImportedLayersMenuController : MonoBehaviour
     }
   }
 
-  /// <summary>
-  /// Инициализирует значения по умолчанию для сериализуемых ссылочных полей,
-  /// если они не заданы в инспекторе.
-  /// </summary>
   private void EnsureDefaultValues()
   {
     if (contentPadding == null)
@@ -204,10 +185,6 @@ public class ImportedLayersMenuController : MonoBehaviour
     return toggleInstance;
   }
 
-  /// <summary>
-  /// Возвращает контейнер, в который нужно добавлять элементы списка.
-  /// Для ScrollView (uGUI) это ScrollRect.content, иначе сам scrollView.
-  /// </summary>
   private Transform GetItemsParent()
   {
     if (scrollView == null)

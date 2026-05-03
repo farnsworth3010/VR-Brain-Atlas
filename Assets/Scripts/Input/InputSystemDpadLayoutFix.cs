@@ -4,16 +4,11 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.Layouts;
 using System.Collections.Generic;
 
-/// <summary>
 /// Исправляет конфликт между стандартной раскладкой D-pad и OpenXR.
 /// 
 /// Проблема: OpenXR может переопределить раскладку D-pad как устройство вместо контрола,
 /// что вызывает проблемы с Input System. Этот скрипт следит за изменениями раскладок
 /// и восстанавливает правильную конфигурацию D-pad, когда она нарушена.
-/// 
-/// Использование: Прикрепить к GameO/bject в сцене. Скрипт автоматически
-/// инициализируется при загрузке сцены.
-/// </summary>
 public class InputSystemDpadLayoutFix : MonoBehaviour
 {
   private static bool isSubscribed;
@@ -59,9 +54,7 @@ public class InputSystemDpadLayoutFix : MonoBehaviour
     RepairIfDpadWasOverridden();
   }
 
-  /// <summary>
   /// Проверяет, была ли раскладка D-pad переопределена OpenXR в устройство.
-  /// </summary>
   /// <returns>true если D-pad переопределена как устройство OpenXR, иначе false</returns>
   private static bool IsDpadOverriddenByOpenXR()
   {
@@ -87,10 +80,8 @@ public class InputSystemDpadLayoutFix : MonoBehaviour
     FixOpenXRBindingOverride();
   }
 
-  /// <summary>
   /// Исправляет переопределение D-pad раскладки OpenXR.
   /// Переустанавливает D-pad как контрол и переинициализирует все активные устройства.
-  /// </summary>
   private static void FixOpenXRBindingOverride()
   {
     // Предотвращаем рекурсивное исправление

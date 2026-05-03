@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Viewer.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
+    com.unity.adaptivePerformance.basic.provider_settings: {fileID: 11400000, guid: 52d3e3195d3bfc84e9233cbeca98576f, type: 2}
+    com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 1e0ff4c1c387b874daf85b25e1068957, type: 2}
+    com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 58c9cd20c9897234091f4e578643ba27, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 66d08fb939e29a54db38191e77fffeac, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 31615619d20435a408edad797f761179, type: 2}

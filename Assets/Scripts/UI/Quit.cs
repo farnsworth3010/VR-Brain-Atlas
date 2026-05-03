@@ -2,11 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Runtime.InteropServices;
 
-/// <summary>
 /// Управляет выходом из приложения.
 /// Позволяет пользователю выйти из приложения, нажав клавишу Escape.
 /// При нажатии Escape отображается диалоговое окно подтверждения.
-/// </summary>
 public class QuitApplication : MonoBehaviour
 {
   [DllImport("user32.dll", CharSet = CharSet.Unicode)]
