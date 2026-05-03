@@ -202,24 +202,24 @@ public class Controller : MonoBehaviour
 
     private void Rotate(float x, float y, float xsens, float ysens)
     {
-        if (!IsFaceButtonActionPressed())
+        // if (!IsFaceButtonActionPressed())
+        // {
+        if (Mathf.Abs(x) >= inputDeadzone)
         {
-            if (Mathf.Abs(x) >= inputDeadzone)
-            {
-                x = x * Time.deltaTime * xsens;
-                x = Mathf.Clamp(x, -maxRotationDegreesPerFrame, maxRotationDegreesPerFrame);
-                xrOrigin.transform.Rotate(Vector3.up * x);
-            }
-
-            if (Mathf.Abs(y) >= inputDeadzone)
-            {
-                y = y * Time.deltaTime * ysens;
-                y = Mathf.Clamp(y, -maxRotationDegreesPerFrame, maxRotationDegreesPerFrame);
-                xRotation -= y;
-                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-                mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            }
+            x = x * Time.deltaTime * xsens;
+            x = Mathf.Clamp(x, -maxRotationDegreesPerFrame, maxRotationDegreesPerFrame);
+            xrOrigin.transform.Rotate(Vector3.up * x);
         }
+
+        if (Mathf.Abs(y) >= inputDeadzone)
+        {
+            y = y * Time.deltaTime * ysens;
+            y = Mathf.Clamp(y, -maxRotationDegreesPerFrame, maxRotationDegreesPerFrame);
+            xRotation -= y;
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+            mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        }
+        // }
     }
 
     private bool IsFaceButtonActionPressed()
