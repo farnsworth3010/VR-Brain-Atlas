@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.maligan.unity-zed": "https://github.com/maligan/unity-zed.git",
     "com.unity.ai.navigation": "2.0.10",
     "com.unity.cloud.gltfast": "6.18.0",
     "com.unity.collab-proxy": "2.11.3",

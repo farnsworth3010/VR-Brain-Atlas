@@ -2581,7 +2581,6 @@ MonoBehaviour:
     m_Right: 4
     m_Top: 4
     m_Bottom: 4
-  debugPopulateOnStart: 0
   startDelaySeconds: 1
 --- !u!1 &1091585100
 GameObject:
@@ -2917,7 +2916,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 3b184004abaf0414e9c01db8f3538906, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -3550,6 +3549,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ModelLoader
   container: {fileID: 543450651766053525}
   importedLayersMenuController: {fileID: 0}
+  modelStateController: {fileID: 919132147775176756}
+  brainMaterial: {fileID: 2100000, guid: 9aaf3e919a2e62a4fb9b9c36b83974e4, type: 2}
+  tumorMaterial: {fileID: 2100000, guid: d16f4dbeee387474d929cf8487334052, type: 2}
   addBoxCollider: 1
   clearContainerBeforeLoad: 1
 --- !u!1 &1252618776
