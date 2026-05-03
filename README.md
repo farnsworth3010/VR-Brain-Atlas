@@ -57,4 +57,6 @@ git lfs pull
 - Подготовка моделей из MRI: через программу `swiss_skull` (ссылка: [swiss_skull](https://github.com/AlekseyShugol/swiss_skull)). `swiss_skull` преобразует МРТ-снимки в 3D-модели мозга и опухоли.
 - Для просмотра моделей в VR поместите экспортированные файлы в папку `Documents/VR Brain Atlas` или выберите файлы вручную через диалог выбора файлов в приложении.
 
+- Важно: файлы моделей должны называться строго `arteria.obj`, `brain.obj`, `tumor.obj` или `skull.obj`.
+
 ![Загрузка модели](Docs/loader.png)
