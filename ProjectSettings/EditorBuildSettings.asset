@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Viewer.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Quiz.unity
+    guid: 956de3f7ea062cb4386cea531585885c
   m_configObjects:
     com.unity.adaptivePerformance.basic.provider_settings: {fileID: 11400000, guid: 52d3e3195d3bfc84e9233cbeca98576f, type: 2}
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 1e0ff4c1c387b874daf85b25e1068957, type: 2}

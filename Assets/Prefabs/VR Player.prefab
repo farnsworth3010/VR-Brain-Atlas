@@ -720,18 +720,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Controller
   moveSpeed: 3
+  gravity: -9.81
+  groundDistance: 0.4
   inputDeadzone: 0.05
   controllerXSensitivity: 100
   controllerYSensitivity: 100
+  mouseXSensitivity: 30
+  mouseYSensitivity: 30
+  rotationSmoothing: 0.02
+  maxRotationDegreesPerFrame: 15
   xRotation: 0
-  gravity: -9.81
-  groundDistance: 0.4
   xrOrigin: {fileID: 9064897163413867666}
   mainCamera: {fileID: 7390754652632277828}
   leftHand: {fileID: 8445535527512543738}
   rightHand: {fileID: 5994882470956148646}
   gamepadRayInteractor: {fileID: 5647795081637261058}
-  velocity: {x: 0, y: 0, z: 0}
   groundCheck: {fileID: 8110771583469390291}
   groundMask:
     serializedVersion: 2
@@ -1294,7 +1297,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5888765399538998960, guid: ad818c36731146e994540a1896ad8f24, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.156
+      value: -0.144
       objectReference: {fileID: 0}
     - target: {fileID: 5888765399538998960, guid: ad818c36731146e994540a1896ad8f24, type: 3}
       propertyPath: m_LocalPosition.z

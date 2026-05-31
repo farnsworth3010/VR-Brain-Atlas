@@ -301,21 +301,21 @@ public class ModelLoader : MonoBehaviour
 
     // Default transform (if no special per-model override)
     loadedObj.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-    loadedObj.transform.localEulerAngles = new Vector3(-90f, 0f, 70f);
-    loadedObj.transform.localPosition = new Vector3(3.216f, 3.2f, 0.403f);
+    // loadedObj.transform.localEulerAngles = new Vector3(-90f, 0f, 70f);
+    // loadedObj.transform.localPosition = new Vector3(3.216f, 3.2f, 0.403f);
 
     // Per-model overrides requested by user
     switch (fileBase.ToLowerInvariant())
     {
       case "brain":
-        loadedObj.transform.localPosition = new Vector3(3.52f, 3.26f, 0.03f);
-        loadedObj.transform.localEulerAngles = new Vector3(-90f, 75.7f, 0f);
+        // loadedObj.transform.localPosition = new Vector3(3.52f, 3.26f, 0.03f);
+        loadedObj.transform.localEulerAngles = new Vector3(0f, 180f, 0f);
         loadedObj.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
         break;
       case "tumor":
-        loadedObj.transform.localPosition = new Vector3(1.786f, 4.478f, 2.152f);
-        loadedObj.transform.localEulerAngles = new Vector3(-22.1f, 149.6f, -48.2f);
-        loadedObj.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+        // loadedObj.transform.localPosition = new Vector3(1.786f, 4.478f, 2.152f);
+        loadedObj.transform.localEulerAngles = new Vector3(0f, 180f, 0f);
+        loadedObj.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
         break;
     }
 

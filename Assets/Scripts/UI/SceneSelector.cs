@@ -20,6 +20,9 @@ public class SceneSelector : MonoBehaviour
                 ViewerState.SetSceneName("Импортированная модель");
                 ViewerState.SetSceneDescription("На этой сцене показана модель, импортированная пользователем. Вы можете включать и выключать видимость отдельных слоёв модели через меню слоёв. Для взаимодействия с моделью используйте контроллеры или геймпад.");
                 break;
+            case 4:
+                SceneManager.LoadSceneAsync(2);
+                return;
         }
 
         // 1 is universal for now
