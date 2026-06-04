@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Dummiesman;
+using Newtonsoft.Json;
 
 public class ModelLoader : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class ModelLoader : MonoBehaviour
   private bool clearContainerBeforeLoad = true;
 
   private bool isLoading;
+  private Dictionary<string, ModelInfo> modelDataByName = new Dictionary<string, ModelInfo>(System.StringComparer.OrdinalIgnoreCase);
   private static readonly HashSet<string> AllowedModelNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
   {
     "arteria.obj",
@@ -204,6 +206,44 @@ public class ModelLoader : MonoBehaviour
       yield break;
     }
 
+    // Attempt to load model_data.json from Documents/VR Brain Atlas
+    try
+    {
+      string docs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+      if (!string.IsNullOrEmpty(docs))
+      {
+        string dataPath = Path.Combine(docs, "VR Brain Atlas", "model_data.json");
+        if (File.Exists(dataPath))
+        {
+          try
+          {
+            string json = File.ReadAllText(dataPath);
+            ModelDataRoot root = JsonConvert.DeserializeObject<ModelDataRoot>(json);
+            if (root?.models != null)
+            {
+              modelDataByName.Clear();
+              foreach (var kv in root.models)
+              {
+                if (kv.Key != null && kv.Value != null)
+                {
+                  modelDataByName[kv.Key.ToLowerInvariant()] = kv.Value;
+                }
+              }
+              Debug.Log($"ModelLoader: loaded model_data.json with {modelDataByName.Count} entries from '{dataPath}'.");
+            }
+          }
+          catch (System.Exception ex)
+          {
+            Debug.LogException(ex);
+          }
+        }
+      }
+    }
+    catch (System.Exception ex)
+    {
+      Debug.LogException(ex);
+    }
+
     isLoading = true;
 
     if (importedLayersMenuController != null)
@@ -308,15 +348,44 @@ public class ModelLoader : MonoBehaviour
     switch (fileBase.ToLowerInvariant())
     {
       case "brain":
-        // loadedObj.transform.localPosition = new Vector3(3.52f, 3.26f, 0.03f);
+        // gets done below
         loadedObj.transform.localEulerAngles = new Vector3(0f, 180f, 0f);
         loadedObj.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
         break;
       case "tumor":
+        // gets done below
         // loadedObj.transform.localPosition = new Vector3(1.786f, 4.478f, 2.152f);
         loadedObj.transform.localEulerAngles = new Vector3(0f, 180f, 0f);
         loadedObj.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
         break;
+    }
+
+    // Apply position/scale from model_data.json (if available) using the same scale convention
+    try
+    {
+      string key = fileBase.ToLowerInvariant();
+      if (modelDataByName != null && modelDataByName.TryGetValue(key, out ModelInfo info) && info != null)
+      {
+        if (info.position != null && info.position.Length >= 3)
+        {
+          // JSON positions are in millimeters; convert to meters and apply the current localScale factor
+          float px = (float)info.position[0];
+          float py = (float)info.position[1];
+          float pz = (float)info.position[2];
+          Vector3 posMeters = new Vector3(px, py, pz) * 0.05f;
+          // Apply same numeric factor as localScale to keep relative sizing consistent
+          float scaleFactor = loadedObj.transform.localScale.x;
+          // loadedObj.transform.localPosition = posMeters * scaleFactor;
+          loadedObj.transform.localPosition = posMeters;
+          Vector3 appliedPosition = loadedObj.transform.localPosition;
+          Debug.Log($"ModelLoader: '{fileBase}' raw JSON position mm = ({px:F6}, {py:F6}, {pz:F6}), meters = ({posMeters.x:F6}, {posMeters.y:F6}, {posMeters.z:F6}), scaleFactor = {scaleFactor:F6}, applied localPosition = ({appliedPosition.x:F6}, {appliedPosition.y:F6}, {appliedPosition.z:F6})");
+          Debug.Log($"ModelLoader: applied position from model_data.json for '{fileBase}': ({appliedPosition.x:F6}, {appliedPosition.y:F6}, {appliedPosition.z:F6})");
+        }
+      }
+    }
+    catch (System.Exception ex)
+    {
+      Debug.LogException(ex);
     }
 
     // Select material based on file base-name

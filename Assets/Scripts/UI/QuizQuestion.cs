@@ -9,7 +9,6 @@ public class QuizQuestion
 
     public int correctIndex;
 
-    /// <summary>Explanation shown after the player answers.</summary>
     public string explanation;
 }
 
