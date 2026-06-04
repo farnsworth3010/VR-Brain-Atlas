@@ -19,6 +19,9 @@ public class ModelLoader : MonoBehaviour
 
   private bool isLoading;
   private Dictionary<string, ModelInfo> modelDataByName = new Dictionary<string, ModelInfo>(System.StringComparer.OrdinalIgnoreCase);
+
+  /// <summary>Parsed incision quiz data from model_data.json. Available after models are loaded.</summary>
+  public IncisionQuizData IncisionQuizData { get; private set; }
   private static readonly HashSet<string> AllowedModelNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
   {
     "arteria.obj",
@@ -230,6 +233,12 @@ public class ModelLoader : MonoBehaviour
                 }
               }
               Debug.Log($"ModelLoader: loaded model_data.json with {modelDataByName.Count} entries from '{dataPath}'.");
+            }
+
+            if (root?.incision_quiz != null)
+            {
+              IncisionQuizData = root.incision_quiz;
+              Debug.Log($"ModelLoader: loaded incision_quiz with {root.incision_quiz.points?.Count ?? 0} points, correct index = {root.incision_quiz.correct_point_index}.");
             }
           }
           catch (System.Exception ex)
