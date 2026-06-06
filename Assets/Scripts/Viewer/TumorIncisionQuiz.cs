@@ -137,7 +137,7 @@ public class TumorIncisionQuiz : MonoBehaviour
     if (modelLoader?.container == null) return;
 
     // Собираем все коллайдеры контейнера, кроме тех, что на сфёрах-маркерах
-    var pointSet = new System.Collections.Generic.HashSet<GameObject>(_spawnedPoints);
+    var pointSet = new HashSet<GameObject>(_spawnedPoints);
     foreach (Collider col in modelLoader.container.GetComponentsInChildren<Collider>())
     {
       if (col.enabled && !pointSet.Contains(col.gameObject))
