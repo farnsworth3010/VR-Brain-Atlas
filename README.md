@@ -65,6 +65,8 @@ git lfs pull
 
 **Важно:** файлы моделей должны называться строго `brain.obj`, `tumor.obj`, `arteria.obj` или `skull.obj`.
 
+> В папке [`Examples/`](Examples/) репозитория находятся пример моделей (`brain.obj`, `tumor.obj`) и готовый `model_data.json` с заполненной секцией `incision_quiz`. Скопируйте содержимое папки в `Documents/VR Brain Atlas` для быстрого тестирования.
+
 ![Загрузка модели](Docs/loader.png)
 
 ---
