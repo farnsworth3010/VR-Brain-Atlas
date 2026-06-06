@@ -4,25 +4,24 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// Controls the brain anatomy quiz flow:
-///   1. Question screen  — number, text, two answer buttons
-///   2. Feedback screen  — tick/cross icons, correct answer and explanation, Next button
-///   3. Result screen    — score summary, contextual result text, Home / Restart buttons
+/// Управляет прохождением викторины по анатомии мозга:
+///   1. Экран вопроса  — номер, текст, две кнопки ответа
+///   2. Экран обратной связи  — иконки верно/неверно, правильный ответ и пояснение, кнопка «Далее»
+///   3. Экран результата    — итоговый счёт, текст оценки, кнопки «Домой» / «Заново»
 ///
-/// Wire up all public fields in the Inspector.
-/// Call OnAnswerSelected(0) and OnAnswerSelected(1) from the respective Button.OnClick() events.
-/// Call OnNextClicked() from nextButton.OnClick().
-/// Call OnRestartClicked() from restartButton.OnClick().
-/// Call OnHomeClicked() from homeButton.OnClick() — it fires the onHome UnityEvent.
+/// Подключите все публичные поля в Инспекторе.
+/// Вызовите OnAnswerSelected(0) и OnAnswerSelected(1) из событий Button.OnClick() соответствующих кнопок.
+/// Вызовите OnNextClicked() из nextButton.OnClick().
+/// Вызовите OnRestartClicked() из restartButton.OnClick().
+/// Вызовите OnHomeClicked() из homeButton.OnClick().
 /// </summary>
 public class Quiz : MonoBehaviour
 {
   // ─────────────────────────────────────────────────────────────────────────
-  // Inspector fields
+  // Поля Инспектора
   // ─────────────────────────────────────────────────────────────────────────
 
   [Header("Data")]
-  [Tooltip("File name inside Assets/Resources/ without extension.")]
   public string jsonFileName = "quiz";
 
   [Header("Question Panel")]
@@ -35,7 +34,7 @@ public class Quiz : MonoBehaviour
   public TMP_Text[] answerButtonLabels;
 
   [Header("Feedback")]
-  [Tooltip("Shown after the player picks an answer. Display correct answer + explanation.")]
+  [Tooltip("Отображается после выбора ответа игроком. Показывает правильный ответ и пояснение.")]
   public TMP_Text feedbackText;
   public Button nextButton;
 
@@ -47,7 +46,7 @@ public class Quiz : MonoBehaviour
   public Button restartButton;
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Private state
+  // Приватное состояние
   // ─────────────────────────────────────────────────────────────────────────
 
   private QuizQuestion[] _questions;
@@ -55,10 +54,6 @@ public class Quiz : MonoBehaviour
   private int _correctCount;
   private int _wrongCount;
   private bool _answered;
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // Unity lifecycle
-  // ─────────────────────────────────────────────────────────────────────────
 
   private void Start()
   {
@@ -68,11 +63,11 @@ public class Quiz : MonoBehaviour
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Public API — wire these to Button.OnClick() in the Inspector
+  // Публичный API — подключить к Button.OnClick() в Инспекторе
   // ─────────────────────────────────────────────────────────────────────────
 
   /// <summary>
-  /// Called by an answer Button. Pass 0 for the first button, 1 for the second.
+  /// Вызывается кнопкой ответа. Передайте 0 для первой кнопки, 1 для второй.
   /// </summary>
   public void OnAnswerSelected(int answerIndex)
   {
@@ -88,7 +83,7 @@ public class Quiz : MonoBehaviour
 
     ShowFeedback(answerIndex, _questions[_currentIndex].correctIndex, isCorrect);
 
-    // Disable all answer buttons so the player cannot click again
+    // Отключаем все кнопки ответов, чтобы игрок не мог кликнуть повторно
     foreach (var btn in answerButtons)
       btn.interactable = false;
 
@@ -96,31 +91,32 @@ public class Quiz : MonoBehaviour
       nextButton.gameObject.SetActive(true);
   }
 
-  /// <summary>Called by nextButton.</summary>
+  /// <summary>Вызывается кнопкой nextButton.</summary>
   public void OnNextClicked()
   {
     int next = _currentIndex + 1;
+
     if (next < _questions.Length)
       ShowQuestion(next);
     else
       ShowResult();
   }
 
-  /// <summary>Called by restartButton — resets state and starts from the first question.</summary>
+  /// <summary>Вызывается кнопкой restartButton — сбрасывает состояние и начинает с первого вопроса.</summary>
   public void OnRestartClicked()
   {
     ResetState();
     ShowQuestion(0);
   }
 
-  /// <summary>Called by homeButton — loads scene 0 (main menu).</summary>
+  /// <summary>Вызывается кнопкой homeButton — загружает сцену 0 (главное меню).</summary>
   public void OnHomeClicked()
   {
     SceneManager.LoadScene(0);
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Private helpers
+  // Вспомогательные методы
   // ─────────────────────────────────────────────────────────────────────────
 
   private void LoadQuestions()
@@ -156,17 +152,17 @@ public class Quiz : MonoBehaviour
     _answered = false;
     QuizQuestion q = _questions[index];
 
-    // Panel visibility
+    // Видимость панелей
     SetPanelActive(questionPanel, true);
     SetPanelActive(resultPanel, false);
 
-    // Question header
+    // Заголовок вопроса
     if (questionNumberText != null)
       questionNumberText.text = $"Вопрос {index + 1} / {_questions.Length}";
 
     if (questionText != null)
     {
-      // Build question text with numbered answers appended
+      // Формируем текст вопроса с пронумерованными вариантами ответов
       var sb = new System.Text.StringBuilder(q.question);
       if (q.answers != null)
         for (int i = 0; i < q.answers.Length; i++)
@@ -174,7 +170,7 @@ public class Quiz : MonoBehaviour
       questionText.text = sb.ToString();
     }
 
-    // Answer buttons — show only the answer number
+    // Кнопки ответов — отображаем только номер ответа
     for (int i = 0; i < answerButtons.Length; i++)
     {
       if (answerButtons[i] != null)
@@ -184,21 +180,21 @@ public class Quiz : MonoBehaviour
         answerButtonLabels[i].text = (i + 1).ToString();
     }
 
-    // Hide feedback
+    // Скрываем обратную связь
     if (feedbackText != null)
     {
       feedbackText.text = string.Empty;
       feedbackText.gameObject.SetActive(false);
     }
 
-    // Hide Next button
+    // Скрываем кнопку «Далее»
     if (nextButton != null)
       nextButton.gameObject.SetActive(false);
   }
 
   private void ShowFeedback(int selectedIndex, int correctIndex, bool isCorrect)
   {
-    // Append ✓/✗ symbol directly to each answer button label
+    // Добавляем символ V/X непосредственно к тексту каждой кнопки ответа
     if (answerButtonLabels != null)
     {
       for (int i = 0; i < answerButtonLabels.Length; i++)
@@ -208,11 +204,11 @@ public class Quiz : MonoBehaviour
           answerButtonLabels[i].text = $"{i + 1} V";
         else if (i == selectedIndex)
           answerButtonLabels[i].text = $"{i + 1} X";
-        // buttons that are neither selected nor correct keep their number
+        // кнопки, которые не выбраны и не являются правильными, сохраняют свой номер
       }
     }
 
-    // Feedback text
+    // Текст обратной связи
     if (feedbackText != null)
     {
       QuizQuestion q = _questions[_currentIndex];
@@ -262,7 +258,7 @@ public class Quiz : MonoBehaviour
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Utilities
+  // Утилиты
   // ─────────────────────────────────────────────────────────────────────────
 
   private static void SetPanelActive(GameObject panel, bool active)

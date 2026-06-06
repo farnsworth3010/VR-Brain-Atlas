@@ -26,10 +26,16 @@ public class TumorIncisionQuiz : MonoBehaviour
   public ModelLoader modelLoader;
 
   [Header("UI")]
+  [Tooltip("Панель с кнопкой старта. Скрывается при показе фидбэка.")]
+  public GameObject mainPanel;
   public GameObject feedbackPanel;
   public TMP_Text feedbackText;
   public Button closeButton;
   public Button startButton;
+  [Tooltip("Текст кнопки в режиме запуска.")]
+  public string startButtonText = "Точки разреза";
+  [Tooltip("Текст кнопки в режиме выхода.")]
+  public string stopButtonText = "Отмена";
 
   [Header("Point Visuals")]
   [Tooltip("Размер сферы-маркера в Unity units")]
@@ -43,9 +49,7 @@ public class TumorIncisionQuiz : MonoBehaviour
   // ── Private state ──────────────────────────────────────────────────────
 
   private readonly List<GameObject> _spawnedPoints = new List<GameObject>();
-
-  // слои и их видимость до старта викторины
-  private readonly Dictionary<GameObject, bool> _savedLayerStates = new Dictionary<GameObject, bool>();
+  private readonly List<Collider> _disabledColliders = new List<Collider>();
 
   private bool _quizActive;
   private bool _answered;
@@ -54,19 +58,30 @@ public class TumorIncisionQuiz : MonoBehaviour
 
   private void Start()
   {
-    if (feedbackPanel != null)
-      feedbackPanel.SetActive(false);
+    HideFeedback();
 
     if (closeButton != null)
       closeButton.onClick.AddListener(CloseQuiz);
 
     if (startButton != null)
-      startButton.onClick.AddListener(StartQuiz);
+    {
+      startButton.gameObject.SetActive(false);
+      startButton.onClick.AddListener(ToggleQuiz);
+    }
   }
 
   // ── Public API ─────────────────────────────────────────────────────────
 
-  /// <summary>Вызывается кнопкой «Начать викторину».</summary>
+  /// <summary>Переключает викторину: запуск / выход. Привязывается к startButton.</summary>
+  public void ToggleQuiz()
+  {
+    if (_quizActive)
+      CloseQuiz();
+    else
+      StartQuiz();
+  }
+
+  /// <summary>Запускает викторину.</summary>
   public void StartQuiz()
   {
     if (_quizActive) return;
@@ -76,7 +91,7 @@ public class TumorIncisionQuiz : MonoBehaviour
         modelLoader.IncisionQuizData.points == null ||
         modelLoader.IncisionQuizData.points.Count == 0)
     {
-      Debug.LogError("TumorIncisionQuiz: нет данных incision_quiz. Убедитесь, что model_data.json загружен.");
+      ShowFeedbackError("Данные о точках разреза не найдены.\nЗагрузите model_data.json с секцией incision_quiz.");
       return;
     }
 
@@ -84,22 +99,21 @@ public class TumorIncisionQuiz : MonoBehaviour
     Transform tumorTransform = FindTumorTransform();
     if (tumorTransform == null)
     {
-      Debug.LogError("TumorIncisionQuiz: объект 'Опухоль' не найден в контейнере.");
+      ShowFeedbackError("Модель опухоли не загружена.\nЗагрузите файл tumor.obj перед запуском викторины.");
       return;
     }
 
     _quizActive = true;
     _answered = false;
 
-    // Скрываем все слои, кроме опухоли; сохраняем их состояние
-    HideOtherLayers(tumorTransform);
+    SetStartButtonText(stopButtonText);
 
     // Спавним маркеры
     SpawnPoints(tumorTransform);
+    DisableModelColliders();
 
     // UI
-    if (feedbackPanel != null) feedbackPanel.SetActive(false);
-    if (startButton != null) startButton.gameObject.SetActive(false);
+    HideFeedback();
   }
 
   /// <summary>Вызывается кнопкой «Закрыть».</summary>
@@ -109,13 +123,69 @@ public class TumorIncisionQuiz : MonoBehaviour
     _answered = false;
 
     DestroyPoints();
-    RestoreLayers();
+    RestoreModelColliders();
 
-    if (feedbackPanel != null) feedbackPanel.SetActive(false);
-    if (startButton != null) startButton.gameObject.SetActive(true);
+    SetStartButtonText(startButtonText);
+    HideFeedback();
   }
 
   // ── Private helpers ────────────────────────────────────────────────────
+
+  private void DisableModelColliders()
+  {
+    _disabledColliders.Clear();
+    if (modelLoader?.container == null) return;
+
+    // Собираем все коллайдеры контейнера, кроме тех, что на сфёрах-маркерах
+    var pointSet = new System.Collections.Generic.HashSet<GameObject>(_spawnedPoints);
+    foreach (Collider col in modelLoader.container.GetComponentsInChildren<Collider>())
+    {
+      if (col.enabled && !pointSet.Contains(col.gameObject))
+      {
+        col.enabled = false;
+        _disabledColliders.Add(col);
+      }
+    }
+  }
+
+  private void RestoreModelColliders()
+  {
+    foreach (Collider col in _disabledColliders)
+    {
+      if (col != null) col.enabled = true;
+    }
+    _disabledColliders.Clear();
+  }
+
+  private void SetStartButtonText(string text)
+  {
+    if (startButton == null) return;
+    TMP_Text label = startButton.GetComponentInChildren<TMP_Text>();
+    if (label != null) label.text = text;
+  }
+
+  private void ShowFeedbackError(string message)
+  {
+    if (feedbackText != null)
+      feedbackText.text = message;
+
+    ShowFeedback();
+
+    if (closeButton != null)
+      closeButton.gameObject.SetActive(true);
+  }
+
+  private void ShowFeedback()
+  {
+    if (mainPanel != null) mainPanel.SetActive(false);
+    if (feedbackPanel != null) feedbackPanel.SetActive(true);
+  }
+
+  private void HideFeedback()
+  {
+    if (feedbackPanel != null) feedbackPanel.SetActive(false);
+    if (mainPanel != null) mainPanel.SetActive(true);
+  }
 
   private Transform FindTumorTransform()
   {
@@ -128,32 +198,6 @@ public class TumorIncisionQuiz : MonoBehaviour
         return child;
     }
     return null;
-  }
-
-  private void HideOtherLayers(Transform tumorTransform)
-  {
-    _savedLayerStates.Clear();
-
-    if (modelLoader == null || modelLoader.container == null) return;
-
-    for (int i = 0; i < modelLoader.container.childCount; i++)
-    {
-      GameObject layer = modelLoader.container.GetChild(i).gameObject;
-      _savedLayerStates[layer] = layer.activeSelf;
-
-      if (layer.transform != tumorTransform)
-        layer.SetActive(false);
-    }
-  }
-
-  private void RestoreLayers()
-  {
-    foreach (var kv in _savedLayerStates)
-    {
-      if (kv.Key != null)
-        kv.Key.SetActive(kv.Value);
-    }
-    _savedLayerStates.Clear();
   }
 
   private void SpawnPoints(Transform tumorTransform)
@@ -198,7 +242,15 @@ public class TumorIncisionQuiz : MonoBehaviour
 
       interactable.hoverEntered.AddListener(_ =>
       {
-        if (!_answered && capturedMr != null)
+        if (_answered) return;
+        // Сбрасываем все точки, затем подсвечиваем только текущую
+        foreach (GameObject pt in _spawnedPoints)
+        {
+          if (pt == null) continue;
+          MeshRenderer r = pt.GetComponent<MeshRenderer>();
+          if (r != null) r.material = defaultPointMaterial;
+        }
+        if (capturedMr != null)
           capturedMr.material = hoverPointMaterial;
       });
 
@@ -246,20 +298,20 @@ public class TumorIncisionQuiz : MonoBehaviour
     }
 
     // Показываем фидбэк
-    if (feedbackPanel != null) feedbackPanel.SetActive(true);
+    ShowFeedback();
 
     if (feedbackText != null)
     {
       string label = data.points[selectedIndex].label;
       if (isCorrect)
       {
-        feedbackText.text = $"<color=#00CC44>✓ Правильно!</color>\n<b>{label}</b>\n\n{data.correct_explanation}";
+        feedbackText.text = $"<color=#00CC44>V Правильно!</color>\n<b>{label}</b>\n\n{data.correct_explanation}";
       }
       else
       {
         string correctLabel = data.points[data.correct_point_index].label;
         feedbackText.text =
-            $"<color=#CC2200>✗ Неправильно.</color>\n<b>Вы выбрали:</b> {label}\n<b>Правильный ответ:</b> {correctLabel}\n\n{data.wrong_explanation}";
+            $"<color=#CC2200>X Неправильно.</color>\n<b>Вы выбрали:</b> {label}\n<b>Правильный ответ:</b> {correctLabel}\n\n{data.wrong_explanation}";
       }
     }
   }

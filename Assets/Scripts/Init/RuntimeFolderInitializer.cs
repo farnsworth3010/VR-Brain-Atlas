@@ -14,6 +14,7 @@ public static class RuntimeFolderInitializer
     try
     {
       string docs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
       if (string.IsNullOrEmpty(docs))
       {
         Debug.LogWarning("RuntimeFolderInitializer: Could not determine MyDocuments path.");

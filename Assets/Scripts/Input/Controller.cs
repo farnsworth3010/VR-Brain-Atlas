@@ -7,27 +7,27 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
 public class Controller : MonoBehaviour
 {
-    // ===== Enum Types =====
+    // ===== Типы перечислений =====
     private enum InputDeviceType { Unknown, MouseKeyboard, Gamepad, VR }
 
-    // ===== Public Parameters - Movement =====
+    // ===== Публичные параметры - Движение =====
     public float moveSpeed = 3f;
     public float gravity = -9.81f;
     public float groundDistance = 0.2f;
 
-    // ===== Public Parameters - Input =====
+    // ===== Публичные параметры - Ввод =====
     public float inputDeadzone = 0.05f;
     public float controllerXSensitivity = 100f;
     public float controllerYSensitivity = 100f;
     public float mouseXSensitivity = 30f;
     public float mouseYSensitivity = 30f;
 
-    // ===== Public Parameters - Rotation =====
+    // ===== Публичные параметры - Поворот =====
     public float rotationSmoothing = 0.02f;
     public float maxRotationDegreesPerFrame = 15f;
     public float xRotation = 0f;
 
-    // ===== Public Component References =====
+    // ===== Публичные ссылки на компоненты =====
     public XROrigin xrOrigin;
     public Camera mainCamera;
     public GameObject leftHand;
@@ -36,12 +36,12 @@ public class Controller : MonoBehaviour
     public Transform groundCheck;
     public LayerMask groundMask;
 
-    // ===== Private Cached Components =====
+    // ===== Приватные кэшированные компоненты =====
     private CharacterController characterController;
     private PlayerInput playerInput;
     private TrackedPoseDriver trackedPoseDriver;
 
-    // ===== Private Input Actions =====
+    // ===== Приватные действия ввода =====
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction attackAction;
@@ -49,7 +49,7 @@ public class Controller : MonoBehaviour
     private InputAction crouchAction;
     private InputAction jumpAction;
 
-    // ===== Private State Variables =====
+    // ===== Приватные переменные состояния =====
     private InputDeviceType currentInputDevice = InputDeviceType.Unknown;
     private bool rotationPaused = false;
     private bool isGrounded;
@@ -97,20 +97,20 @@ public class Controller : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Ignore input for the first 100 ms to avoid sudden camera jumps on scene start
+        // Игнорировать ввод первые 100 мс, чтобы избежать резких скачков камеры при старте сцены
         inputIgnoreUntil = Time.time + 0.1f;
     }
 
     void Update()
     {
-        // Ignore all user input (including Escape/click) for a short startup window
+        // Игнорировать весь пользовательский ввод (включая Escape/клик) в течение короткого стартового окна
         if (Time.time < inputIgnoreUntil)
             return;
 
         Vector2 moveInput = moveAction != null ? moveAction.ReadValue<Vector2>() : Vector2.zero;
         Vector2 rotateInput = lookAction != null ? lookAction.ReadValue<Vector2>() : Vector2.zero;
 
-        // Toggle pause on Escape: unlock and show cursor, stop rotation
+        // Пауза по Escape: разблокировать и показать курсор, остановить вращение
         bool escapePressed;
 
         if (Keyboard.current != null)
@@ -125,7 +125,7 @@ public class Controller : MonoBehaviour
             Cursor.visible = true;
         }
 
-        // If rotation is paused, resume when user clicks (left mouse) inside the window
+        // Если вращение на паузе — возобновить при клике левой кнопкой мыши в окне
         bool resumeClick;
         if (rotationPaused)
         {
@@ -139,7 +139,7 @@ public class Controller : MonoBehaviour
                 rotationPaused = false;
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
-                // ignore input briefly after re-lock to avoid spikes
+                // Кратко игнорировать ввод после повторной блокировки, чтобы избежать скачков
                 inputIgnoreUntil = Time.time + 0.1f;
                 UpdateInputModeState();
             }
@@ -147,11 +147,11 @@ public class Controller : MonoBehaviour
 
         if (Cursor.lockState == CursorLockMode.Locked && !rotationPaused)
         {
-            // smooth rotate input to reduce spikes
+            // Сглаживаем ввод поворота для уменьшения скачков
             Vector2 smoothedRotate = Vector2.SmoothDamp(lastRotateInput, rotateInput, ref rotateSmoothVelocity, rotationSmoothing);
             lastRotateInput = smoothedRotate;
 
-            // Choose sensitivity based on the control that produced the look action if available
+            // Выбираем чувствительность на основе устройства, вызвавшего действие Look
             float xsens = activeXSensitivity;
             float ysens = activeYSensitivity;
             if (lookAction != null && lookAction.activeControl != null)
@@ -240,6 +240,7 @@ public class Controller : MonoBehaviour
         CancelInvoke(nameof(UpdateInputModeState));
         Invoke(nameof(UpdateInputModeState), 0.01f);
     }
+
     private void OnDeviceChange(InputDevice device, InputDeviceChange change)
     {
         switch (change)
@@ -291,7 +292,7 @@ public class Controller : MonoBehaviour
             gamepadRayInteractor.enabled = !hasVRControllers;
         }
 
-        // Determine current input device and set active sensitivities.
+        // Определяем текущее устройство ввода и устанавливаем активную чувствительность.
         InputDeviceType detected = InputDeviceType.Unknown;
 
         if (hasVRControllers)
@@ -376,27 +377,14 @@ public class Controller : MonoBehaviour
 
             if (!device.enabled) continue;
 
-            string displayName = device.displayName.ToLower();
-
-            // Проверяем по названиям HTC Vive контроллеров
-            if (displayName.Contains("vive") ||
-                displayName.Contains("htc") ||
-                displayName.Contains("openvr"))
+            if (device is XRController)
             {
-                Debug.Log($"✓ Найден VR контроллер: {device.displayName}");
-                return true;
-            }
-
-            // Проверяем по типам устройств (XR контроллеры)
-            // Дополнить когда будут известны конкретные типы контроллеров
-            if (false)
-            {
-                Debug.Log($"✓ Найдено XR устройство: {device.displayName} (тип: {device.GetType().Name})");
+                Debug.Log($"✓ Найден XR контроллер: {device.displayName} (тип: {device.GetType().Name})");
                 return true;
             }
         }
 
-        Debug.Log("✗ VR контроллеры не найдены");
+        Debug.Log("✗ XR контроллеры не найдены");
         return false;
     }
 }
